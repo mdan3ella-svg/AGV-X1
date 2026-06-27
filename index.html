@@ -28,7 +28,6 @@
 </nav>
 
 <main class="pt-24 px-6 max-w-7xl mx-auto space-y-24">
-    <!-- Hero Section -->
     <section class="grid md:grid-cols-2 gap-12 items-center min-h-[60vh]">
         <div>
             <h2 class="text-6xl font-black mb-6 tracking-tighter">AVG-X1<br>ENGINEERING</h2>
@@ -36,7 +35,6 @@
         </div>
     </section>
 
-    <!-- Tabs Section -->
     <section class="hud-panel p-8 rounded-2xl">
         <div class="flex space-x-8 border-b border-gray-800 pb-4 mb-8" id="tab-container">
             <button onclick="switchTab('specs')" class="font-bold border-b-2 border-blue-500">Technical Specs</button>
@@ -58,7 +56,6 @@
         </div>
     </section>
 
-    <!-- Elevations Section -->
     <section class="grid md:grid-cols-2 gap-10 pb-24">
         <div class="space-y-4 bg-black/40 p-4 rounded-xl border border-white/10"><img src="FRONT ELEV.webp" class="rounded-lg"><p class="text-center opacity-60 uppercase text-xs tracking-widest">Front Elevation</p></div>
         <div class="space-y-4 bg-black/40 p-4 rounded-xl border border-white/10"><img src="REAR ELEV.webp" class="rounded-lg"><p class="text-center opacity-60 uppercase text-xs tracking-widest">Rear Elevation</p></div>
@@ -67,7 +64,6 @@
     </section>
 </main>
 
-<!-- 3D Explorer Overlay -->
 <div id="explorer" class="fixed inset-0 hidden z-[100] bg-black/95 flex items-center justify-center p-6">
     <div id="canvas-wrapper" class="w-full max-w-5xl h-[70vh] rounded-2xl overflow-hidden border border-white/20"></div>
     <button onclick="document.getElementById('explorer').classList.add('hidden')" class="absolute top-8 right-8 text-white font-bold tracking-widest uppercase text-sm">Close Explorer</button>
@@ -93,9 +89,6 @@
     function init3D() {
         const container = document.getElementById('canvas-wrapper');
         const scene = new THREE.Scene();
-        // Set a default background color so it's not black if texture fails
-        scene.background = new THREE.Color(0x111111);
-        
         const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
         const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
         renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -104,23 +97,15 @@
         container.innerHTML = '';
         container.appendChild(renderer.domElement);
 
-        // Add Default Studio Lighting
-        const ambient = new THREE.AmbientLight(0xffffff, 0.6);
-        scene.add(ambient);
-        const dirLight = new THREE.DirectionalLight(0xffffff, 1);
-        dirLight.position.set(5, 5, 5);
-        scene.add(dirLight);
-
-        // Environment Map with explicit error handling
+        // Environment Map Integration for Reflections
         const loader = new THREE.TextureLoader();
         loader.load('world.jpg', (texture) => {
             texture.mapping = THREE.EquirectangularReflectionMapping;
             scene.environment = texture;
-            scene.background = texture;
-        }, undefined, (err) => {
-            console.warn("World texture not found, using default lighting.");
         });
 
+        // REMOVED manual scene lighting to allow embedded .GLB lights to define the studio environment.
+        
         const gltfLoader = new THREE.GLTFLoader();
         gltfLoader.load('avg-x1.glb', (gltf) => { 
             scene.add(gltf.scene); 
